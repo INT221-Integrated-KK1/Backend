@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -27,11 +28,14 @@ public class Task {
     @Basic
     @Column(name = "taskStatus")
     private Object taskStatus;
+
     @Basic
     @Column(name = "createdOn")
-    private Timestamp createdOn;
+    private LocalDateTime createdOn;
+
     @Basic
     @Column(name = "updatedOn")
-    private Timestamp updatedOn;
+    private LocalDateTime updatedOn;
+
 
 }
