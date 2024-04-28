@@ -17,7 +17,7 @@ public class Task {
     @Column(name = "taskId")
     private int taskId;
     @Basic
-    @Column(name = "taskTitle")
+    @Column(name = "taskTitle", nullable = false)
     private String taskTitle;
     @Basic
     @Column(name = "taskDescription")
@@ -26,16 +26,13 @@ public class Task {
     @Column(name = "taskAssignees")
     private String taskAssignees;
     @Basic
-    @Column(name = "taskStatus")
+    @Column(name = "taskStatus", nullable = false)
     private Object taskStatus;
 
     @Basic
-    @Column(name = "createdOn")
-    private LocalDateTime createdOn;
-
+    @Column(name = "createdOn", nullable = false, updatable = false)
+    private Timestamp createdOn;
     @Basic
-    @Column(name = "updatedOn")
-    private LocalDateTime updatedOn;
-
-
+    @Column(name = "updatedOn", nullable = false)
+    private Timestamp updatedOn;
 }
