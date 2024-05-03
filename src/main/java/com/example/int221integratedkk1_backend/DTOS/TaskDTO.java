@@ -1,14 +1,15 @@
 package com.example.int221integratedkk1_backend.DTOS;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Setter
 @Getter
@@ -27,9 +28,14 @@ public class TaskDTO {
 
     private Object taskStatus;
 
-    private LocalDateTime createdOn;
+    @Basic
+    @Column(name = "createdOn")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
+    private ZonedDateTime createdOn;
 
-    private LocalDateTime updatedOn;
-
+    @Basic
+    @Column(name = "updatedOn")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
+    private ZonedDateTime updatedOn;
 
 }

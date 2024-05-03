@@ -1,11 +1,10 @@
 package com.example.int221integratedkk1_backend.Entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -16,23 +15,27 @@ public class Task {
     @Id
     @Column(name = "taskId")
     private int taskId;
-    @Basic
+
     @Column(name = "taskTitle", nullable = false)
     private String taskTitle;
-    @Basic
+
     @Column(name = "taskDescription")
     private String taskDescription;
-    @Basic
+
     @Column(name = "taskAssignees")
     private String taskAssignees;
-    @Basic
-    @Column(name = "taskStatus", nullable = false)
+
+
+    @Column(name = "taskStatus", nullable = false,columnDefinition = "varchar(255) default 'No Status'")
     private Object taskStatus;
 
-    @Basic
-    @Column(name = "createdOn", nullable = false, updatable = false)
-    private Timestamp createdOn;
-    @Basic
-    @Column(name = "updatedOn", nullable = false)
-    private Timestamp updatedOn;
+    @Column(name = "createdOn")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
+    private ZonedDateTime createdOn;
+
+    @Column(name = "updatedOn")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
+    private ZonedDateTime updatedOn;
+
+
 }
