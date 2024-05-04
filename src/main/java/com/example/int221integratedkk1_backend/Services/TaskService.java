@@ -1,15 +1,19 @@
 package com.example.int221integratedkk1_backend.Services;
 
+import com.example.int221integratedkk1_backend.DTOS.AddDTO;
+import com.example.int221integratedkk1_backend.DTOS.EditDTO;
 import com.example.int221integratedkk1_backend.DTOS.TaskDTO;
 import com.example.int221integratedkk1_backend.Entities.Task;
+import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
 import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Setter
@@ -17,61 +21,52 @@ import java.util.Optional;
 public class TaskService {
     private final TaskRepository repository;
     private final ListMapper listMapper;
-
     public TaskService(TaskRepository repository, ListMapper listMapper) {
         this.repository = repository;
         this.listMapper = listMapper;
     }
-
     public List<TaskDTO> getAllTasks() {
         List<Task> tasks = repository.findAll();
         return listMapper.mapList(tasks, TaskDTO.class);
     }
-
-    public TaskDTO getTaskById(Integer id) {
-        Task task = repository.findById(id).orElse(null);
-        if (task != null) {
-            return listMapper.mapList(List.of(task), TaskDTO.class).get(0);
-        } else {
-            return null;
-        }
+    public Task getTaskById(Integer id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Task id " + id + " does not exist !!!"));
     }
-
-    public TaskDTO addTask(TaskDTO taskDTO) {
-        Task task = listMapper.mapList(List.of(taskDTO), Task.class).get(0);
+    public TaskDTO addTask(AddDTO addTaskDTO) {
+        Task task = listMapper.mapList(List.of(addTaskDTO), Task.class).get(0);
         if (task.getTaskStatus() == null || task.getTaskStatus().toString().isEmpty()) {
             task.setTaskStatus("No Status");
         }
-        ZonedDateTime currentDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        task.setCreatedOn(currentDateTime);
-        task.setUpdatedOn(currentDateTime);
+        task.setCreatedOn(null);
+        task.setUpdatedOn(null);
         Task savedTask = repository.save(task);
         TaskDTO savedTaskDTO = listMapper.mapList(List.of(savedTask), TaskDTO.class).get(0);
         savedTaskDTO.setTaskId(savedTask.getTaskId());
-        return listMapper.mapList(List.of(savedTask), TaskDTO.class).get(0);
+        return savedTaskDTO;
     }
 
     public boolean deleteTaskById(Integer id) {
-        Optional<Task> taskOptional = repository.findById(id);
-        if (taskOptional.isPresent()) {
-            repository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+        Task task = repository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("NOT FOUND"));
+        repository.delete(task);
+        return true;
     }
 
-    public boolean updateTask(Integer id, Task updatedTask) {
-        Optional<Task> optionalTask = repository.findById(id);
-        if (optionalTask.isPresent()) {
-            Task existingTask = optionalTask.get();
-            existingTask.setTaskTitle(updatedTask.getTaskTitle());
-            existingTask.setTaskDescription(updatedTask.getTaskDescription());
-            existingTask.setTaskStatus(updatedTask.getTaskStatus());
-            repository.save(existingTask);
-            return true;
-        } else {
-            return false;
-        }
+    public boolean updateTask(Integer id, EditDTO editTaskDTO) {
+        Task task = repository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("NOT FOUND"));
+        task.setTaskTitle(editTaskDTO.getTaskTitle());
+        task.setTaskDescription(editTaskDTO.getTaskDescription());
+        task.setTaskAssignees(editTaskDTO.getTaskAssignees());
+        task.setTaskStatus(editTaskDTO.getTaskStatus());
+//        ZonedDateTime now = ZonedDateTime.now();
+//        Timestamp timestamp = Timestamp.valueOf(now.toLocalDateTime());
+//        task.setUpdatedOn(timestamp);
+//        task.setUpdatedOn(ZonedDateTime.now().withZoneSameInstant);
+        repository.save(task);
+        return true;
     }
+
 }
+

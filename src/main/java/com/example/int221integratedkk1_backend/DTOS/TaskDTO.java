@@ -17,25 +17,10 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 
 public class TaskDTO {
-
     private int taskId;
-
     private String taskTitle;
-
-    private String taskDescription;
-
     private String taskAssignees;
-
     private Object taskStatus;
-
-//    @Basic
-//    @Column(name = "createdOn")
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
-//    private ZonedDateTime createdOn;
-//
-//    @Basic
-//    @Column(name = "updatedOn")
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
-//    private ZonedDateTime updatedOn;
-//
 }
+
+

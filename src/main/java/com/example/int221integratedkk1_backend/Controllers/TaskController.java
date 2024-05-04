@@ -1,8 +1,11 @@
 package com.example.int221integratedkk1_backend.Controllers;
 
+import com.example.int221integratedkk1_backend.DTOS.AddDTO;
+import com.example.int221integratedkk1_backend.DTOS.EditDTO;
 import com.example.int221integratedkk1_backend.DTOS.ErrorDTO;
 import com.example.int221integratedkk1_backend.DTOS.TaskDTO;
 import com.example.int221integratedkk1_backend.Entities.Task;
+import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
 import com.example.int221integratedkk1_backend.Services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -37,47 +41,41 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getTaskById(@PathVariable Integer id) {
-        TaskDTO taskDTO = taskService.getTaskById(id);
-        if (taskDTO != null) {
-            return new ResponseEntity<>(taskDTO, HttpStatus.OK);
-        } else {
-            String errorMessage = "Task Id " + id + " does not exist!!!";
-            ErrorDTO errorDetails = new ErrorDTO(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), errorMessage, "/v1/tasks/" + id);
+        try {
+            Task task = taskService.getTaskById(id);
+            return ResponseEntity.ok(task);
+        } catch (ItemNotFoundException e) {
+            String errorMessage = e.getMessage();
+            ErrorDTO errorDetails = new ErrorDTO(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), errorMessage, "/api/tasks/" + id);
             return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> addTask(@RequestBody TaskDTO taskDTO) {
-        TaskDTO createdTask = taskService.addTask(taskDTO);
-        if (createdTask != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create task");
-        }
+    public ResponseEntity<TaskDTO> addTask(@RequestBody AddDTO addTaskDTO) {
+        TaskDTO savedTask = taskService.addTask(addTaskDTO);
+        return new ResponseEntity<>(savedTask, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTask(@PathVariable Integer id) {
-        boolean isDeleted = taskService.deleteTaskById(id);
-
-        if (isDeleted) {
+        try {
+            boolean isDeleted = taskService.deleteTaskById(id);
             return ResponseEntity.ok("Task deleted successfully");
-        } else {
-            String errorMessage = "NOT FOUND";
+        } catch (ItemNotFoundException e) {
+            String errorMessage = e.getMessage();
             ErrorDTO errorDetails = new ErrorDTO(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), errorMessage, "/v1/tasks/" + id);
             return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTask(@PathVariable Integer id, @RequestBody Task updatedTask) {
-        boolean isUpdated = taskService.updateTask(id, updatedTask);
-
-        if (isUpdated) {
-            return ResponseEntity.ok("The task has been updated");
-        } else {
-            String errorMessage = "NOT FOUND";
+    public ResponseEntity<?> updateTask(@PathVariable Integer id, @RequestBody EditDTO editTaskDTO) {
+        try {
+            boolean updated = taskService.updateTask(id, editTaskDTO);
+            return ResponseEntity.ok("Task update successfully");
+        } catch (ItemNotFoundException e) {
+            String errorMessage = e.getMessage();
             ErrorDTO errorDetails = new ErrorDTO(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), errorMessage, "/v1/tasks/" + id);
             return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
         }

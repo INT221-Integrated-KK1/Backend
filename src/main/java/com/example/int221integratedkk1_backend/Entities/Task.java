@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 
 @Getter
@@ -28,16 +30,13 @@ public class Task {
     @Column(name = "taskStatus", nullable = false,columnDefinition = "varchar(255) default 'No Status'")
     private Object taskStatus;
 
-    @Column(name = "createdOn")
+    @Column(name = "createdOn", updatable = false,insertable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
-    private ZonedDateTime createdOn;
+    private Timestamp createdOn;
 
-    @Column(name = "updatedOn")
+    @Column(name = "updatedOn",insertable = false,updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
-    private ZonedDateTime updatedOn;
-
-
-
+    private Timestamp updatedOn;
 
 
 
