@@ -32,11 +32,11 @@ public class Task {
 
     @Column(name = "createdOn", updatable = false,insertable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
-    private Timestamp createdOn;
+    private ZonedDateTime createdOn;
 
     @Column(name = "updatedOn",insertable = false,updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")
-    private Timestamp updatedOn;
+    private ZonedDateTime updatedOn;
 
 
 

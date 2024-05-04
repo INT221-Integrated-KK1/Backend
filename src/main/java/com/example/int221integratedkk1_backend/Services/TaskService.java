@@ -54,6 +54,8 @@ public class TaskService {
     }
 
     public boolean updateTask(Integer id, EditDTO editTaskDTO) {
+
+
         Task task = repository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("NOT FOUND"));
         task.setTaskTitle(editTaskDTO.getTaskTitle());
@@ -61,9 +63,7 @@ public class TaskService {
         task.setTaskAssignees(editTaskDTO.getTaskAssignees());
         task.setTaskStatus(editTaskDTO.getTaskStatus());
 //        ZonedDateTime now = ZonedDateTime.now();
-//        Timestamp timestamp = Timestamp.valueOf(now.toLocalDateTime());
-//        task.setUpdatedOn(timestamp);
-//        task.setUpdatedOn(ZonedDateTime.now().withZoneSameInstant);
+       // task.setUpdatedOn(ZonedDateTime.now());
         repository.save(task);
         return true;
     }

@@ -18,5 +18,5 @@ public class EditDTO {
     private String taskDescription;
     private String taskAssignees;
     private Object taskStatus;
-    private Timestamp updateOn;
+    private ZonedDateTime updateOn;
 }
