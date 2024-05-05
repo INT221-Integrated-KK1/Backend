@@ -21,24 +21,42 @@ public class TaskService {
         this.repository = repository;
         this.listMapper = listMapper;
     }
+//    public List<TaskDTO> getAllTasks() {
+//        List<Task> tasks = repository.findAll();
+//        return listMapper.mapList(tasks, TaskDTO.class);
+//    }
+
+
     public List<TaskDTO> getAllTasks() {
         List<Task> tasks = repository.findAll();
-        return listMapper.mapList(tasks, TaskDTO.class);
+        List<TaskDTO> taskDTOs = listMapper.mapList(tasks, TaskDTO.class);
+
+        // Modify status field in each TaskDTO
+        for (TaskDTO taskDTO : taskDTOs) {
+            taskDTO.setStatus(convertToEnumFormat((String) taskDTO.getStatus()));
+        }
+
+        return taskDTOs;
+    }
+
+    private String convertToEnumFormat(String status) {
+        return status.toUpperCase().replace(" ", "_");
     }
     public Task getTaskById(Integer id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("Task id " + id + " does not exist !!!"));
+        Task task = repository.findById(id).orElseThrow(() -> new ItemNotFoundException("Task id " + id + " does not exist !!!"));
+              task.setStatus(convertToEnumFormat(task.getStatus().toString()));
+    return task;
     }
     public TaskDTO addTask(AddDTO addTaskDTO) {
         Task task = listMapper.mapList(List.of(addTaskDTO), Task.class).get(0);
-        if (task.getTaskStatus() == null || task.getTaskStatus().toString().isEmpty()) {
-            task.setTaskStatus("No Status");
+        if (task.getStatus() == null || task.getStatus().toString().isEmpty()) {
+            task.setStatus("No Status");
         }
-        task.setCreatedOn(null);
-        task.setUpdatedOn(null);
+//        task.setCreatedOn(null);
+//        task.setUpdatedOn(null);
         Task savedTask = repository.save(task);
         TaskDTO savedTaskDTO = listMapper.mapList(List.of(savedTask), TaskDTO.class).get(0);
-        savedTaskDTO.setTaskId(savedTask.getTaskId());
+        savedTaskDTO.setId(savedTask.getId());
         return savedTaskDTO;
     }
 
@@ -52,10 +70,10 @@ public class TaskService {
     public boolean updateTask(Integer id, EditDTO editTaskDTO) {
         Task task = repository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("NOT FOUND"));
-        task.setTaskTitle(editTaskDTO.getTaskTitle());
-        task.setTaskDescription(editTaskDTO.getTaskDescription());
-        task.setTaskAssignees(editTaskDTO.getTaskAssignees());
-        task.setTaskStatus(editTaskDTO.getTaskStatus());
+        task.setTitle(editTaskDTO.getTitle());
+        task.setDescription(editTaskDTO.getDescription());
+        task.setAssignees(editTaskDTO.getAssignees());
+        task.setStatus(editTaskDTO.getStatus());
         // ZonedDateTime now = ZonedDateTime.now();
         // task.setUpdatedOn(ZonedDateTime.now());
         repository.save(task);

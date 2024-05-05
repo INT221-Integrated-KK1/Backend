@@ -14,19 +14,19 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "taskId")
-    private int taskId;
+    private int id;
 
     @Column(name = "taskTitle", nullable = false)
-    private String taskTitle;
+    private String title;
 
     @Column(name = "taskDescription")
-    private String taskDescription;
+    private String description;
 
     @Column(name = "taskAssignees")
-    private String taskAssignees;
+    private String assignees;
 
     @Column(name = "taskStatus", nullable = false,columnDefinition = "varchar(255) default 'No Status'")
-    private Object taskStatus;
+    private Object status;
 
     @Column(name = "createdOn", updatable = false,insertable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "UTC")

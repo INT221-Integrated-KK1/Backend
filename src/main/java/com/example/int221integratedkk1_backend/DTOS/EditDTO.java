@@ -11,10 +11,10 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditDTO {
-    private int taskId;
-    private String taskTitle;
-    private String taskDescription;
-    private String taskAssignees;
-    private Object taskStatus;
+    private int id;
+    private String title;
+    private String description;
+    private String assignees;
+    private Object status;
     private ZonedDateTime updateOn;
 }

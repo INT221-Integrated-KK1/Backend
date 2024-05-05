@@ -8,10 +8,10 @@ import lombok.*;
 @AllArgsConstructor
 
 public class TaskDTO {
-    private int taskId;
-    private String taskTitle;
-    private String taskAssignees;
-    private Object taskStatus;
+    private int id;
+    private String title;
+    private String assignees;
+    private Object status;
 }
 
 
