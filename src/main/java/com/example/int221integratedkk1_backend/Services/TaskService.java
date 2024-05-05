@@ -9,10 +9,6 @@ import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -54,16 +50,14 @@ public class TaskService {
     }
 
     public boolean updateTask(Integer id, EditDTO editTaskDTO) {
-
-
         Task task = repository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("NOT FOUND"));
         task.setTaskTitle(editTaskDTO.getTaskTitle());
         task.setTaskDescription(editTaskDTO.getTaskDescription());
         task.setTaskAssignees(editTaskDTO.getTaskAssignees());
         task.setTaskStatus(editTaskDTO.getTaskStatus());
-//        ZonedDateTime now = ZonedDateTime.now();
-       // task.setUpdatedOn(ZonedDateTime.now());
+        // ZonedDateTime now = ZonedDateTime.now();
+        // task.setUpdatedOn(ZonedDateTime.now());
         repository.save(task);
         return true;
     }

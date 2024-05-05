@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 
 @Getter
@@ -13,7 +11,7 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name = "task", schema = "itb-kk")
 public class Task {
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "taskId")
     private int taskId;
