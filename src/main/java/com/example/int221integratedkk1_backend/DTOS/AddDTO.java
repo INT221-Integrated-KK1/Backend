@@ -17,8 +17,5 @@ public class AddDTO {
     private String description;
     private String assignees;
     private Object status;
-//    @Column(name = "createdOn", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-//    private ZonedDateTime createdOn;
-//    @Column(name = "updatedOn", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-//    private ZonedDateTime updatedOn;
+
 }
