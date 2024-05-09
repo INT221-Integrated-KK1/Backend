@@ -1,5 +1,8 @@
 package com.example.int221integratedkk1_backend.DTOS;
 
+import com.example.int221integratedkk1_backend.Entities.StatusEntity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 @Setter
@@ -11,7 +14,11 @@ public class TaskDTO {
     private int id;
     private String title;
     private String assignees;
-    private Object status;
+    @ManyToOne
+    @JoinColumn(name = "taskStatus", referencedColumnName = "statusId", nullable = false, columnDefinition = "varchar(255) default 'No Status'")
+    private StatusEntity status;
+
+
 }
 
 
