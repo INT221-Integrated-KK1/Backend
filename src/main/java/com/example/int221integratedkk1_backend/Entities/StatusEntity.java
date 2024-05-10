@@ -15,12 +15,20 @@ public class StatusEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "statusId")
-    private int statusId;
+    private int id;
     @Basic
-    @Column(name = "statusName")
-    private String statusName;
+    @Column(name = "statusName",nullable = false,length = 50)
+    private String name;
     @Basic
-    @Column(name = "statusDescription")
-    private String statusDescription;
+    @Column(name = "statusDescription",length = 200)
+    private String description;
 
+
+    public void setName(String name) {
+        this.name = name != null ? name.trim() : null;
+    }
+
+    public void setDescription(String description) {
+        this.description = description != null ? description.trim() : null;
+    }
 }

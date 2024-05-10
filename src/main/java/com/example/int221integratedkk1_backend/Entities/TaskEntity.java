@@ -30,7 +30,7 @@ public class TaskEntity {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private OffsetDateTime createdOn;
 
-    @Column(name = "updatedOn", insertable = false)
+    @Column(name = "updatedOn")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private OffsetDateTime updatedOn;
 

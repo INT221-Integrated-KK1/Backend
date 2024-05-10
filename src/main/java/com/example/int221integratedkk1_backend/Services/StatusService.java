@@ -2,12 +2,16 @@ package com.example.int221integratedkk1_backend.Services;
 
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
 import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
+
+@Getter
+@Setter
 @Service
 public class StatusService {
     private final StatusRepository statusRepository;
@@ -21,23 +25,43 @@ public class StatusService {
         return statusRepository.findAll();
     }
 
-    public Optional<StatusEntity> getStatusById(int id) {
-        return statusRepository.findById(id);
-    }
-
     public StatusEntity createStatus(StatusEntity statusEntity) {
+
+        if (statusEntity.getName() != null) {
+            statusEntity.setName(statusEntity.getName().trim());
+        }
+        if (statusEntity.getDescription() != null) {
+            statusEntity.setDescription(statusEntity.getDescription().trim());
+        }
         return statusRepository.save(statusEntity);
     }
 
-    public StatusEntity updateStatus(int id, StatusEntity updatedStatus) {
-        if (statusRepository.existsById(id)) {
-            updatedStatus.setStatusId(id);
-            return statusRepository.save(updatedStatus);
-        } else {
-
-            return null;
+    public ResponseEntity<?> updateStatus(int id, StatusEntity updatedStatus) {
+        if (updatedStatus.getName() != null) {
+            updatedStatus.setName(updatedStatus.getName().trim());
         }
+        if (updatedStatus.getDescription() != null) {
+            updatedStatus.setDescription(updatedStatus.getDescription().trim());
+        }
+
+        if (statusRepository.existsById(id)) {
+            StatusEntity existingStatus = statusRepository.findById(id).orElse(null);
+            if (existingStatus != null) {
+                if (id != 1 && !"No Status".equals(updatedStatus.getName())) {
+                    updatedStatus.setId(id);
+                    return ResponseEntity.ok(statusRepository.save(updatedStatus));
+                } else {
+                    // Return bad request if attempting to modify statusId 1 or the name "No Status"
+                    return ResponseEntity.badRequest().build();
+                }
+            }
+        }
+        // Return not found if the status with the given ID does not exist
+        return ResponseEntity.notFound().build();
     }
+
+
+
 
     public void deleteStatus(int id) {
         statusRepository.deleteById(id);

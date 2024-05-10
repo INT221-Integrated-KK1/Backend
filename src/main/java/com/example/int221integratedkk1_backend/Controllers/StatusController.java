@@ -1,13 +1,21 @@
 package com.example.int221integratedkk1_backend.Controllers;
 
+import com.example.int221integratedkk1_backend.DTOS.ErrorDTO;
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
+import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
 import com.example.int221integratedkk1_backend.Services.StatusService;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+@Getter
+@Setter
 @RestController
 @RequestMapping("/v2/statuses")
 public class StatusController {
@@ -24,17 +32,25 @@ public class StatusController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public StatusEntity createStatus(@RequestBody StatusEntity statusEntity) {
         return statusService.createStatus(statusEntity);
     }
 
     @PutMapping("/{id}")
-    public StatusEntity updateStatus(@PathVariable int id, @RequestBody StatusEntity updatedStatus) {
-        return statusService.updateStatus(id, updatedStatus);
+    public ResponseEntity<?> updateStatus(@PathVariable int id, @RequestBody StatusEntity updatedStatus) {
+        updatedStatus.setId(id);
+        try {
+            ResponseEntity<?> updated =statusService.updateStatus(id, updatedStatus);
+            return ResponseEntity.ok("Task update successfully");
+        } catch (ItemNotFoundException e) {
+            String errorMessage = e.getMessage();
+            ErrorDTO errorDetails = new ErrorDTO(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), errorMessage, "/v2/statuses/" + id);
+            return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+        }
     }
-
-//    @DeleteMapping("/{id}")
-//    public void deleteStatus(@PathVariable int id) {
-//        statusService.deleteStatus(id);
-//    }
+    @DeleteMapping("/{id}")
+    public void deleteStatus(@PathVariable int id) {
+        statusService.deleteStatus(id);
+    }
 }
