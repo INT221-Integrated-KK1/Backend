@@ -1,6 +1,7 @@
 package com.example.int221integratedkk1_backend.Services;
 
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
+import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,9 @@ public class StatusService {
         return statusRepository.findAll();
     }
 
-    public Optional<StatusEntity> getStatusById(int id) {
-        return statusRepository.findById(id);
+
+    public StatusEntity getStatusById(int id) {
+        return statusRepository.findById(id).orElse(null);
     }
 
     public StatusEntity createStatus(StatusEntity statusEntity) {
