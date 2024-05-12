@@ -1,19 +1,14 @@
 package com.example.int221integratedkk1_backend.Services;
 
-import com.example.int221integratedkk1_backend.DTOS.AddDTO;
-import com.example.int221integratedkk1_backend.DTOS.EditDTO;
 import com.example.int221integratedkk1_backend.DTOS.TaskDTO;
-import com.example.int221integratedkk1_backend.Entities.Task;
-import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
+import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Setter
-@Getter
 public class TaskService {
     private final TaskRepository repository;
     private final ListMapper listMapper;
@@ -21,64 +16,24 @@ public class TaskService {
         this.repository = repository;
         this.listMapper = listMapper;
     }
-//    public List<TaskDTO> getAllTasks() {
-//        List<Task> tasks = repository.findAll();
-//        return listMapper.mapList(tasks, TaskDTO.class);
-//    }
-
 
     public List<TaskDTO> getAllTasks() {
-        List<Task> tasks = repository.findAll();
+        List<TaskEntity> tasks = repository.findAll();
         List<TaskDTO> taskDTOs = listMapper.mapList(tasks, TaskDTO.class);
-
-        // Modify status field in each TaskDTO
-        for (TaskDTO taskDTO : taskDTOs) {
-            taskDTO.setStatus(convertToEnumFormat((String) taskDTO.getStatus()));
-        }
-
         return taskDTOs;
     }
 
-    private String convertToEnumFormat(String status) {
-        return status.toUpperCase().replace(" ", "_");
+    public TaskEntity getTaskById(int taskId) {
+        return repository.findById(taskId).orElse(null);
     }
-    public Task getTaskById(Integer id) {
-        Task task = repository.findById(id).orElseThrow(() -> new ItemNotFoundException("Task id " + id + " does not exist !!!"));
-              task.setStatus(convertToEnumFormat(task.getStatus().toString()));
-    return task;
+    public TaskEntity createTask(TaskEntity task) {
+        return repository.save(task);
     }
-    public TaskDTO addTask(AddDTO addTaskDTO) {
-        Task task = listMapper.mapList(List.of(addTaskDTO), Task.class).get(0);
-        if (task.getStatus() == null || task.getStatus().toString().isEmpty()) {
-            task.setStatus("No Status");
-        }
-//        task.setCreatedOn(null);
-//        task.setUpdatedOn(null);
-        Task savedTask = repository.save(task);
-        TaskDTO savedTaskDTO = listMapper.mapList(List.of(savedTask), TaskDTO.class).get(0);
-        savedTaskDTO.setId(savedTask.getId());
-        return savedTaskDTO;
+    public TaskEntity updateTask(TaskEntity task) {
+        return repository.save(task);
     }
-
-    public boolean deleteTaskById(Integer id) {
-        Task task = repository.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("NOT FOUND"));
-        repository.delete(task);
-        return true;
+    public void deleteTask(int taskId) {
+        repository.deleteById(taskId);
     }
-
-    public boolean updateTask(Integer id, EditDTO editTaskDTO) {
-        Task task = repository.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("NOT FOUND"));
-        task.setTitle(editTaskDTO.getTitle());
-        task.setDescription(editTaskDTO.getDescription());
-        task.setAssignees(editTaskDTO.getAssignees());
-        task.setStatus(editTaskDTO.getStatus());
-        // ZonedDateTime now = ZonedDateTime.now();
-        // task.setUpdatedOn(ZonedDateTime.now());
-        repository.save(task);
-        return true;
-    }
-
 }
 
