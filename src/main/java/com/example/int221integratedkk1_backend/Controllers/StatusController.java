@@ -18,6 +18,7 @@ import java.util.List;
 @Setter
 @RestController
 @RequestMapping("/v2/statuses")
+@CrossOrigin(origins = "http://localhost:5173")
 public class StatusController {
     private final StatusService statusService;
 
@@ -35,6 +36,11 @@ public class StatusController {
     @ResponseStatus(HttpStatus.CREATED)
     public StatusEntity createStatus(@RequestBody StatusEntity statusEntity) {
         return statusService.createStatus(statusEntity);
+    }
+
+    @GetMapping("/{id}")
+    public StatusEntity  getStatusById(@PathVariable int id) {
+        return statusService.getStatusById(id);
     }
 
     @PutMapping("/{id}")

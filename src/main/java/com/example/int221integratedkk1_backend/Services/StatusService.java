@@ -1,6 +1,7 @@
 package com.example.int221integratedkk1_backend.Services;
 
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
+import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
 import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,11 @@ public class StatusService {
         return statusRepository.findAll();
     }
 
+    public StatusEntity getStatusById(int id) {
+        return statusRepository.findById(id).orElse(null);
+    }
+
+
     public StatusEntity createStatus(StatusEntity statusEntity) {
 
         if (statusEntity.getName() != null) {
@@ -44,21 +50,19 @@ public class StatusService {
             updatedStatus.setDescription(updatedStatus.getDescription().trim());
         }
 
-        if (statusRepository.existsById(id)) {
-            StatusEntity existingStatus = statusRepository.findById(id).orElse(null);
-            if (existingStatus != null) {
-                if (id != 1 && !"No Status".equals(updatedStatus.getName())) {
-                    updatedStatus.setId(id);
-                    return ResponseEntity.ok(statusRepository.save(updatedStatus));
-                } else {
-                    // Return bad request if attempting to modify statusId 1 or the name "No Status"
-                    return ResponseEntity.badRequest().build();
-                }
-            }
+        StatusEntity existingStatus = statusRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Status with ID " + id + " not found"));
+
+        if (id != 1 && !"No Status".equals(updatedStatus.getName())) {
+            updatedStatus.setId(id);
+            statusRepository.save(updatedStatus);
+            return ResponseEntity.ok("Status updated successfully");
+        } else {
+            return ResponseEntity.badRequest().build();
         }
-        // Return not found if the status with the given ID does not exist
-        return ResponseEntity.notFound().build();
     }
+
+
 
 
 
