@@ -28,11 +28,15 @@ public class StatusService {
     }
 
     public StatusEntity createStatus(StatusEntity statusEntity) {
+        statusEntity.setStatusName(statusEntity.getStatusName().trim());
+        statusEntity.setStatusDescription(statusEntity.getStatusDescription().trim());
         return statusRepository.save(statusEntity);
     }
 
     public StatusEntity updateStatus(int id, StatusEntity updatedStatus) {
         if (statusRepository.existsById(id)) {
+            updatedStatus.setStatusName(updatedStatus.getStatusName().trim());
+            updatedStatus.setStatusDescription(updatedStatus.getStatusDescription().trim());
             updatedStatus.setStatusId(id);
             return statusRepository.save(updatedStatus);
         } else {
