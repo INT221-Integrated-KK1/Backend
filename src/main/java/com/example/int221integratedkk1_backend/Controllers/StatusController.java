@@ -3,6 +3,8 @@ package com.example.int221integratedkk1_backend.Controllers;
 import com.example.int221integratedkk1_backend.DTOS.ErrorDTO;
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
+import com.example.int221integratedkk1_backend.Entities.TaskEntity;
+
 import com.example.int221integratedkk1_backend.Services.StatusService;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +32,11 @@ public class StatusController {
     @GetMapping
     public List<StatusEntity> getAllStatuses() {
         return statusService.getAllStatuses();
+    }
+
+    @GetMapping("/{id}")
+    public StatusEntity  getStatusById(@PathVariable int id) {
+        return statusService.getStatusById(id);
     }
 
     @PostMapping

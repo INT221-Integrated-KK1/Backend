@@ -30,17 +30,19 @@ public class TaskService {
         return task;
     }
     public TaskEntity createTask(TaskEntity task) {
+
         if (task.getTitle() == null) {
             throw new IllegalArgumentException("Title cannot be null");
         } else
         return repository.save(task);
     }
+  
     public boolean updateTask(Integer id,TaskEntity task) {
         TaskEntity taskEntity = repository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("NOT FOUND"));
-        taskEntity.setTitle(task.getTitle());
-        taskEntity.setDescription(task.getDescription());
-        taskEntity.setAssignees(task.getAssignees());
+       taskEntity.setTitle(task.getTitle().trim());
+       taskEntity.setDescription(task.getDescription().trim());
+       taskEntity.setAssignees(task.getAssignees().trim());
         taskEntity.setStatus(task.getStatus());
         // ZonedDateTime now = ZonedDateTime.now();
         // task.setUpdatedOn(ZonedDateTime.now());

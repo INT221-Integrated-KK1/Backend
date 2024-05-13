@@ -1,7 +1,11 @@
 package com.example.int221integratedkk1_backend.Services;
 
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
+
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
+
+import com.example.int221integratedkk1_backend.Entities.TaskEntity;
+
 import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,13 +29,14 @@ public class StatusService {
     public List<StatusEntity> getAllStatuses() {
         return statusRepository.findAll();
     }
-
+  
     public StatusEntity getStatusById(int id) {
         return statusRepository.findById(id).orElse(null);
     }
 
 
     public StatusEntity createStatus(StatusEntity statusEntity) {
+
 
         if (statusEntity.getName() != null) {
             statusEntity.setName(statusEntity.getName().trim());
@@ -41,6 +46,7 @@ public class StatusService {
         }
         return statusRepository.save(statusEntity);
     }
+  
 
     public ResponseEntity<?> updateStatus(int id, StatusEntity updatedStatus) {
         if (updatedStatus.getName() != null) {
@@ -53,6 +59,7 @@ public class StatusService {
         StatusEntity existingStatus = statusRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status with ID " + id + " not found"));
 
+
         if (id != 1 && !"No Status".equals(updatedStatus.getName())) {
             updatedStatus.setId(id);
             statusRepository.save(updatedStatus);
@@ -61,10 +68,6 @@ public class StatusService {
             return ResponseEntity.badRequest().build();
         }
     }
-
-
-
-
 
 
     public void deleteStatus(int id) {
