@@ -48,17 +48,33 @@ public class TaskService {
     return task;
     }
     public TaskDTO addTask(AddDTO addTaskDTO) {
+        // Check if the title is null
+        if (addTaskDTO.getTitle() == null) {
+            throw new IllegalArgumentException("Title cannot be null");
+        }
+
+
+        addTaskDTO.setTitle(addTaskDTO.getTitle().trim());
+
+        if (addTaskDTO.getDescription() != null) {
+            addTaskDTO.setDescription(addTaskDTO.getDescription().trim());
+        }
+        if (addTaskDTO.getAssignees() != null) {
+            addTaskDTO.setAssignees(addTaskDTO.getAssignees().trim());
+        }
+
+
         Task task = listMapper.mapList(List.of(addTaskDTO), Task.class).get(0);
         if (task.getStatus() == null || task.getStatus().toString().isEmpty()) {
             task.setStatus("No Status");
         }
-//        task.setCreatedOn(null);
-//        task.setUpdatedOn(null);
+
         Task savedTask = repository.save(task);
         TaskDTO savedTaskDTO = listMapper.mapList(List.of(savedTask), TaskDTO.class).get(0);
         savedTaskDTO.setId(savedTask.getId());
         return savedTaskDTO;
     }
+
 
     public boolean deleteTaskById(Integer id) {
         Task task = repository.findById(id)
