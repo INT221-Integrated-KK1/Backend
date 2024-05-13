@@ -27,9 +27,18 @@ public class TaskService {
         return repository.findById(taskId).orElse(null);
     }
     public TaskEntity createTask(TaskEntity task) {
+        task.setTitle(task.getTitle().trim());
+        task.setDescription(task.getDescription().trim());
+        task.setAssignees(task.getAssignees().trim());
+
         return repository.save(task);
     }
+
     public TaskEntity updateTask(TaskEntity task) {
+        task.setTitle(task.getTitle().trim());
+        task.setDescription(task.getDescription().trim());
+        task.setAssignees(task.getAssignees().trim());
+
         return repository.save(task);
     }
     public void deleteTask(int taskId) {
