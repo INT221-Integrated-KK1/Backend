@@ -29,6 +29,7 @@ public class StatusController {
     public Optional<StatusEntity> getStatusById(@PathVariable int id) {
         return statusService.getStatusById(id);
     }
+
     @PostMapping
     public ResponseEntity<StatusEntity> createStatus(@RequestBody StatusEntity statusEntity) {
         try {
@@ -39,29 +40,16 @@ public class StatusController {
         }
     }
 
+
     @PutMapping("/{id}")
-    public StatusEntity updateStatus(@PathVariable int id, @RequestBody StatusEntity updatedStatus) {
-        return statusService.updateStatus(id, updatedStatus);
+    public ResponseEntity<StatusEntity> updateStatus(@PathVariable int id, @RequestBody StatusEntity updatedStatus) {
+        StatusEntity updatedEntity = statusService.updateStatus(id, updatedStatus);
+        if (updatedEntity != null) {
+            return ResponseEntity.ok(updatedEntity);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<String> deleteStatus(@PathVariable int id) {
-//        ResponseEntity<String> response = statusService.deleteStatus(id);
-//        if (response.getStatusCode().is2xxSuccessful()) {
-//            return ResponseEntity.ok(response.getBody());
-//        } else {
-//            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-//        }
-//    }
-//
-//    @PostMapping("/{id}/{newId}")
-//    public ResponseEntity<String> transferStatus(@PathVariable int id, @PathVariable int newId) {
-//        ResponseEntity<String> response = statusService.transferAndDeleteStatus(id, newId);
-//        if (response.getStatusCode().is2xxSuccessful()) {
-//            return ResponseEntity.ok(response.getBody());
-//        } else {
-//            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-//        }
-//    }
 
 }

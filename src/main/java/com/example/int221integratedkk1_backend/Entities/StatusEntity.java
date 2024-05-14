@@ -29,9 +29,18 @@ public class StatusEntity {
             this.name = name.trim();
         }
     }
+
+
     public void setDescription(String description) {
         if (description != null) {
-            this.description = description.trim();
+
+            String trimmedDescription = description.trim();
+
+            if (trimmedDescription.isEmpty()) {
+                this.description = null;
+            } else {
+                this.description = trimmedDescription;
+            }
         }
     }
 

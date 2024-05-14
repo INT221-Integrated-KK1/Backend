@@ -12,15 +12,6 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<TaskEntity, Integer> {
 
-
-    List<TaskEntity> findByStatus(StatusEntity status);
-
-    // Method to save a list of tasks
-
-
-    @Query("SELECT t FROM TaskEntity t JOIN FETCH t.status") // Ensure status is fetched
-    List<TaskEntity> findAllWithStatus();
-
 }
 
 

@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.Getter;
 
 
-
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -24,19 +23,17 @@ public class TaskRequest {
     private Integer status;
 
     public void setDescription(String description) {
-        if (description == null || description.isEmpty()){
+        if (description == null || description.isEmpty()) {
             this.description = null;
-    }
-        else {
+        } else {
             this.description = description.trim();
         }
     }
 
     public void setAssignees(String assignees) {
-        if (assignees == null || assignees.isEmpty()){
+        if (assignees == null || assignees.isEmpty()) {
             this.assignees = null;
-        }
-        else {
+        } else {
             this.assignees = assignees.trim();
         }
     }
