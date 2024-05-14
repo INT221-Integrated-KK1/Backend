@@ -16,6 +16,9 @@ public class TaskService {
         this.repository = repository;
         this.listMapper = listMapper;
     }
+    public void saveTasks(List<Task> tasks) {
+        TaskRepository.saveAll(tasks);
+    }
 
     public List<TaskDTO> getAllTasks() {
         List<TaskEntity> tasks = repository.findAll();
