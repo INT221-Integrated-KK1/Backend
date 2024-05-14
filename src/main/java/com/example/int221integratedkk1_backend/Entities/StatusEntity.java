@@ -23,4 +23,17 @@ public class StatusEntity {
     @Column(name = "statusDescription")
     private String description;
 
+
+    public void setName(String name) {
+        if (name != null) {
+            this.name = name.trim();
+        }
+    }
+    public void setDescription(String description) {
+        if (description != null) {
+            this.description = description.trim();
+        }
+    }
+
+
 }
