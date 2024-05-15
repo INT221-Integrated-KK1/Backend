@@ -3,12 +3,14 @@ package com.example.int221integratedkk1_backend.Services;
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
 import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
+import com.example.int221integratedkk1_backend.Exception.StatusCannotBeDeletedException;
 import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
 import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -30,8 +32,9 @@ public class StatusService {
         return statusRepository.findAll();
     }
 
-    public Optional<StatusEntity> getStatusById(int id) {
-        return statusRepository.findById(id);
+    public StatusEntity getStatusById(int id) {
+        return statusRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException());
     }
 
     public StatusEntity createStatus(StatusEntity statusEntity) {
@@ -85,5 +88,36 @@ public class StatusService {
         }
     }
 
+    @Transactional
+    public void deleteStatus(int id) {
+        StatusEntity status = statusRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        if ("No Status".equalsIgnoreCase(status.getName())) {
+            throw new StatusCannotBeDeletedException("Cannot delete 'No Status'");
+        }
+        statusRepository.delete(status);
+    }
+
+    @Transactional
+    public int transferTasksAndDeleteStatus(int id, Integer transferToId) {
+        StatusEntity statusToDelete = statusRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        if ("No Status".equalsIgnoreCase(statusToDelete.getName())) {
+            throw new StatusCannotBeDeletedException("Cannot delete 'No Status'");
+        }
+
+        List<TaskEntity> tasks = taskRepository.findByStatusId(id);
+        if (!tasks.isEmpty()) {
+            if (transferToId == null) {
+                throw new ItemNotFoundException();
+            }
+            StatusEntity transferToStatus = statusRepository.findById(transferToId).orElseThrow(ItemNotFoundException::new);
+            tasks.forEach(task -> task.setStatus(transferToStatus));
+            taskRepository.saveAll(tasks);
+        }
+        statusRepository.delete(statusToDelete);
+        return tasks.size();
+    }
 
 }
+
+
+
