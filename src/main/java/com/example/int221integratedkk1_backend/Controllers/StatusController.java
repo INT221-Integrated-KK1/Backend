@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/v2/statuses")
+@CrossOrigin(origins = "http://localhost:5173/")
 public class StatusController {
     private final StatusService statusService;
 

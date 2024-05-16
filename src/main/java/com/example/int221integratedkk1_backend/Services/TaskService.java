@@ -25,8 +25,15 @@ public class TaskService {
     @Autowired
     private StatusRepository statusRepository;
 
-    public List<TaskDTO> getAllTasks() {
-        List<TaskEntity> tasks = repository.findAll();
+    public List<TaskDTO> getAllTasks(List<String> filterStatuses) {
+        List<TaskEntity> tasks;
+        if(filterStatuses != null){
+            tasks = repository.findByStatusNamesAndSort(filterStatuses);
+            System.out.println(tasks);
+        }else {
+            //tasks = repository.findByStatusNamesAndSort(filterStatuses);
+            tasks = repository.findAll();
+        }
         List<TaskDTO> taskDTOs = listMapper.mapList(tasks, TaskDTO.class);
         return taskDTOs;
     }
@@ -52,6 +59,11 @@ public class TaskService {
 
     public void deleteTask(int taskId) {
         repository.deleteById(taskId);
+    }
+
+    // filter
+    public List<TaskEntity> getTasksByStatusesAndSort(List<String> statusNames) {
+        return repository.findByStatusNamesAndSort(statusNames);
     }
 }
 

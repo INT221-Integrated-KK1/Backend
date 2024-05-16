@@ -11,9 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v2/tasks")
+@CrossOrigin(origins = "http://localhost:5173/")
 public class TaskController {
 
     @Autowired
@@ -22,9 +24,10 @@ public class TaskController {
     private ModelMapper modelMapper;
 
 
-    @GetMapping
-    public ResponseEntity<List<TaskDTO>> getAllTasks() {
-        List<TaskDTO> taskDTOs = taskService.getAllTasks();
+    @GetMapping("")
+    public ResponseEntity<List<TaskDTO>> getAllTasks(@RequestParam(required = false) List<String> filterStatuses) {
+        System.out.println(filterStatuses);
+        List<TaskDTO> taskDTOs = taskService.getAllTasks(filterStatuses);
         if (taskDTOs.isEmpty()) {
             return ResponseEntity.ok().body(List.of());
         } else {
@@ -59,4 +62,13 @@ public class TaskController {
     public void deleteTask(@PathVariable int id) {
         taskService.deleteTask(id);
     }
+
+    // filter
+//    @GetMapping("")
+//    public List<TaskEntity> getTasks(@RequestParam List<String> filterStatuses,
+//                                     @RequestParam String sortBy,
+//                                     @RequestParam String sortDirection) {
+//        return taskService.getTasksByStatusesAndSort(filterStatuses, sortBy, sortDirection);
+//    }
+
 }
