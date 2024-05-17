@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/v2/tasks")
 @CrossOrigin(origins = "http://localhost:5173/")
 public class TaskController {
+
+    private static final Logger LOGGER = Logger.getLogger(TaskController.class.getName());
 
     @Autowired
     private TaskService taskService;
@@ -25,15 +28,14 @@ public class TaskController {
 
 
     @GetMapping("")
-    public ResponseEntity<List<TaskDTO>> getAllTasks(@RequestParam(required = false) List<String> filterStatuses) {
-        System.out.println(filterStatuses);
-        List<TaskDTO> taskDTOs = taskService.getAllTasks(filterStatuses);
-        if (taskDTOs.isEmpty()) {
-            return ResponseEntity.ok().body(List.of());
-        } else {
-            return ResponseEntity.ok().body(taskDTOs);
-        }
+    public ResponseEntity<List<TaskDTO>> getAllTasks(@RequestParam(required = false) List<String> filterStatuses,
+                                                     @RequestParam(defaultValue = "status.name") String sortBy,
+                                                     @RequestParam(defaultValue = "asc") String sortDirection) {
+
+        List<TaskDTO> taskDTOs = taskService.getAllTasks(filterStatuses, sortBy, sortDirection);
+        return ResponseEntity.ok(taskDTOs);
     }
+
 
 
     @GetMapping("/{id}")

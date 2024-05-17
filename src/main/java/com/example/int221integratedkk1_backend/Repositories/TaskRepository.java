@@ -1,11 +1,10 @@
 package com.example.int221integratedkk1_backend.Repositories;
 
-import com.example.int221integratedkk1_backend.Entities.StatusEntity;
 import com.example.int221integratedkk1_backend.Entities.TaskEntity;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,9 +14,11 @@ public interface TaskRepository extends JpaRepository<TaskEntity, Integer> {
 
     List<TaskEntity> findByStatusId(int statusId);
 
-    @Query("SELECT t FROM TaskEntity t JOIN t.status s WHERE s.name IN :statusNames")
-    List<TaskEntity> findByStatusNamesAndSort(@Param("statusNames") List<String> statusNames);
+//    @Query("SELECT t FROM TaskEntity t JOIN t.status s WHERE s.name IN :status")
+//    List<TaskEntity> findByStatusNamesAndSort(@Param("status") List<String> status, Sort sort);
+
+    @Query("select t from TaskEntity t join StatusEntity s on s.id = t.status.id where t.status.name in :status ")
+    List<TaskEntity> findAllByStatusNames(@Param("status") List<String> status,Sort sort);
+
+
 }
-
-
-
