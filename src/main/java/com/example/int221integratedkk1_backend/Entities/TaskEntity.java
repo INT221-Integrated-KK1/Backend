@@ -16,13 +16,13 @@ public class TaskEntity {
     @Column(name = "taskId")
     private int id;
     @Basic
-    @Column(name = "taskTitle", nullable = false,length = 100)
+    @Column(name = "taskTitle", nullable = false, length = 100)
     private String title;
     @Basic
-    @Column(name = "taskDescription",length = 500)
+    @Column(name = "taskDescription", length = 500)
     private String description;
     @Basic
-    @Column(name = "taskAssignees",length = 30)
+    @Column(name = "taskAssignees", length = 30)
     private String assignees;
 
     @Basic
@@ -30,7 +30,8 @@ public class TaskEntity {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private OffsetDateTime createdOn;
 
-    @Column(name = "updatedOn", insertable = false)
+    @Basic
+    @Column(name = "updatedOn",insertable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private OffsetDateTime updatedOn;
 

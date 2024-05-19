@@ -4,28 +4,27 @@ import com.example.int221integratedkk1_backend.Entities.StatusEntity;
 import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
 import com.example.int221integratedkk1_backend.Exception.StatusCannotBeDeletedException;
+import com.example.int221integratedkk1_backend.Exception.ValidateInputException;
+import com.example.int221integratedkk1_backend.Models.ErrorMessageExtractor;
 import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
 import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StatusService {
     private final StatusRepository statusRepository;
+    private final TaskRepository taskRepository;
+    private ErrorMessageExtractor errorMessageExtractor;
 
     @Autowired
-    private TaskRepository taskRepository;
-
-    @Autowired
-    public StatusService(StatusRepository statusRepository) {
+    public StatusService(StatusRepository statusRepository, TaskRepository taskRepository) {
         this.statusRepository = statusRepository;
+        this.taskRepository = taskRepository;
     }
 
     public List<StatusEntity> getAllStatuses() {
@@ -34,11 +33,11 @@ public class StatusService {
 
     public StatusEntity getStatusById(int id) {
         return statusRepository.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException());
+                .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
     }
 
+    @Transactional
     public StatusEntity createStatus(StatusEntity statusEntity) {
-
         if (statusEntity.getName() != null) {
             statusEntity.setName(statusEntity.getName().trim());
         }
@@ -46,78 +45,113 @@ public class StatusService {
             statusEntity.setDescription(statusEntity.getDescription().trim());
         }
 
-
-        String statusName = statusEntity.getName().toLowerCase();
-        Optional<StatusEntity> existingStatus = statusRepository.findById(statusEntity.getId());
-        if (existingStatus.isPresent()) {
-            return null;
-        } else {
-
-            return statusRepository.save(statusEntity);
-        }
-    }
-
-    public StatusEntity updateStatus(int id, StatusEntity updatedStatus) {
-        try {
-
-            StatusEntity existingStatus = statusRepository.findById(id)
-                    .orElseThrow(() -> new ItemNotFoundException());
-
-
-            if (existingStatus.getName().equalsIgnoreCase("No Status")) {
-                throw new IllegalArgumentException("Cannot update 'No Status'");
-            }
-
-
-            if (updatedStatus.getDescription() != null && !updatedStatus.getDescription().trim().isEmpty()) {
-                existingStatus.setDescription(updatedStatus.getDescription().trim());
-            }
-
-            if (updatedStatus.getName() != null && !updatedStatus.getName().trim().isEmpty()) {
-                existingStatus.setName(updatedStatus.getName().trim());
-            }
-
-
-            return statusRepository.save(existingStatus);
-        } catch (IllegalArgumentException e) {
-
-            return null;
-        } catch (ItemNotFoundException e) {
-
-            return null;
-        }
+        return statusRepository.save(statusEntity);
     }
 
     @Transactional
+    public StatusEntity updateStatus(int id, StatusEntity updatedStatus) {
+        StatusEntity existingStatus = statusRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
+
+        if ("No Status".equalsIgnoreCase(existingStatus.getName())) {
+            throw new IllegalArgumentException("Cannot update 'No Status'");
+        }
+        if ("Done".equalsIgnoreCase(existingStatus.getName())) {
+            throw new IllegalArgumentException("Cannot update 'Done'");
+        }
+
+        if (updatedStatus.getDescription() != null && !updatedStatus.getDescription().trim().isEmpty()) {
+            existingStatus.setDescription(updatedStatus.getDescription().trim());
+        }
+        if (updatedStatus.getName() != null && !updatedStatus.getName().trim().isEmpty()) {
+            existingStatus.setName(updatedStatus.getName().trim());
+        }
+
+        return statusRepository.save(existingStatus);
+    }
+
+    //    @Transactional
+//    public StatusEntity createStatus(StatusEntity statusEntity) {
+//        if (statusEntity.getName() != null) {
+//            statusEntity.setName(statusEntity.getName().trim());
+//        }
+//        if (statusEntity.getDescription() != null) {
+//            statusEntity.setDescription(statusEntity.getDescription().trim());
+//        }
+//
+//        try {
+//            return statusRepository.save(statusEntity);
+//        } catch (DataIntegrityViolationException ex) {
+//            String errorMessage = ex.getMessage();
+//            String extractedMessage = errorMessageExtractor.extractErrorMessage(errorMessage);
+//            throw new ValidateInputException(extractedMessage);
+//        }
+//    }
+//    @Transactional
+//    public StatusEntity updateStatus(int id, StatusEntity updatedStatus) {
+//        StatusEntity existingStatus = statusRepository.findById(id)
+//                .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
+//
+//        if ("No Status".equalsIgnoreCase(existingStatus.getName())) {
+//            throw new IllegalArgumentException("Cannot update 'No Status'");
+//        }
+//        if ("Done".equalsIgnoreCase(existingStatus.getName())) {
+//            throw new IllegalArgumentException("Cannot update 'Done'");
+//        }
+//
+//        if (updatedStatus.getDescription() != null && !updatedStatus.getDescription().trim().isEmpty()) {
+//            existingStatus.setDescription(updatedStatus.getDescription().trim());
+//        }
+//        if (updatedStatus.getName() != null && !updatedStatus.getName().trim().isEmpty()) {
+//            existingStatus.setName(updatedStatus.getName().trim());
+//        }
+//
+//        try {
+//            return statusRepository.save(existingStatus);
+//        } catch (DataIntegrityViolationException ex) {
+//            String errorMessage = ex.getMessage();
+//            String extractedMessage = errorMessageExtractor.extractErrorMessage(errorMessage);
+//            throw new ValidateInputException(extractedMessage);
+//        }
+//    }
+    @Transactional
     public void deleteStatus(int id) {
-        StatusEntity status = statusRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        StatusEntity status = statusRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
+
         if ("No Status".equalsIgnoreCase(status.getName())) {
             throw new StatusCannotBeDeletedException("Cannot delete 'No Status'");
         }
+        if ("Done".equalsIgnoreCase(status.getName())) {
+            throw new StatusCannotBeDeletedException("Cannot delete 'Done'");
+        }
+
         statusRepository.delete(status);
     }
 
     @Transactional
     public int transferTasksAndDeleteStatus(int id, Integer transferToId) {
-        StatusEntity statusToDelete = statusRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        StatusEntity statusToDelete = statusRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
+
         if ("No Status".equalsIgnoreCase(statusToDelete.getName())) {
             throw new StatusCannotBeDeletedException("Cannot delete 'No Status'");
+        }
+        if ("Done".equalsIgnoreCase(statusToDelete.getName())) {
+            throw new StatusCannotBeDeletedException("Cannot delete 'Done'");
         }
 
         List<TaskEntity> tasks = taskRepository.findByStatusId(id);
         if (!tasks.isEmpty()) {
             if (transferToId == null) {
-                throw new ItemNotFoundException();
+                throw new ItemNotFoundException("Transfer status not found");
             }
-            StatusEntity transferToStatus = statusRepository.findById(transferToId).orElseThrow(ItemNotFoundException::new);
+            StatusEntity transferToStatus = statusRepository.findById(transferToId)
+                    .orElseThrow(() -> new ItemNotFoundException("Status " + transferToId + " not found"));
             tasks.forEach(task -> task.setStatus(transferToStatus));
             taskRepository.saveAll(tasks);
         }
         statusRepository.delete(statusToDelete);
         return tasks.size();
     }
-
 }
-
-
-

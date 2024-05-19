@@ -14,11 +14,8 @@ public interface TaskRepository extends JpaRepository<TaskEntity, Integer> {
 
     List<TaskEntity> findByStatusId(int statusId);
 
-//    @Query("SELECT t FROM TaskEntity t JOIN t.status s WHERE s.name IN :status")
-//    List<TaskEntity> findByStatusNamesAndSort(@Param("status") List<String> status, Sort sort);
-
     @Query("select t from TaskEntity t join StatusEntity s on s.id = t.status.id where t.status.name in :status ")
-    List<TaskEntity> findAllByStatusNames(@Param("status") List<String> status,Sort sort);
+    List<TaskEntity> findAllByStatusNames(@Param("status") List<String> status, Sort sort);
 
 
 }

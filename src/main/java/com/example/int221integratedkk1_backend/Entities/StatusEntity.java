@@ -17,19 +17,26 @@ public class StatusEntity {
     @Column(name = "statusId")
     private int id;
     @Basic
-    @Column(name = "statusName")
+    @Column(name = "statusName", length = 50, nullable = false)
     private String name;
     @Basic
-    @Column(name = "statusDescription")
+    @Column(name = "statusDescription", length = 200)
     private String description;
 
 
     public void setName(String name) {
+
         if (name != null) {
             this.name = name.trim();
         }
-    }
 
+        String trimmedName = name.trim();
+        if (trimmedName.isEmpty()) {
+            this.name = null;
+        } else {
+            this.name = trimmedName;
+        }
+    }
 
     public void setDescription(String description) {
         if (description != null) {

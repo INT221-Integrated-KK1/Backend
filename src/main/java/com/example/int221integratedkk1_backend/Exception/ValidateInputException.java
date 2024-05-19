@@ -2,9 +2,10 @@ package com.example.int221integratedkk1_backend.Exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class ItemNotFoundException extends RuntimeException {
-    public ItemNotFoundException(String message) {
+
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class ValidateInputException extends RuntimeException {
+    public ValidateInputException(String message) {
         super(message);
     }
 }

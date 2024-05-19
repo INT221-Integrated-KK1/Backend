@@ -16,10 +16,8 @@ import lombok.Setter;
 public class TaskRequest {
     private int id;
     private String title;
-
     private String description;
     private String assignees;
-
     private Integer status;
 
     public void setDescription(String description) {
