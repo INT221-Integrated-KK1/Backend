@@ -75,8 +75,8 @@ public class TaskService {
         TaskEntity taskEntity = modelMapper.map(task, TaskEntity.class);
         StatusEntity statusEntity = statusRepository.findById(task.getStatus())
                 .orElseThrow(() -> new ItemNotFoundException("Status does not exist"));
-        if (task.getTitle() == null) {
-            throw new IllegalArgumentException("Title cannot be null");
+        if (task.getTitle() == null|| task.getTitle().isEmpty()) {
+            throw new ValidateInputException("Title cannot be null");
         } else
             taskEntity.setStatus(statusEntity);
         return repository.save(taskEntity);
@@ -86,6 +86,10 @@ public class TaskService {
     public boolean updateTask(Integer id, TaskEntity editTask) {
         TaskEntity task = repository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Task " + id + " does not exist !!!"));
+
+        if (editTask.getTitle() == null) {
+            throw new ValidateInputException("Title cannot be null");
+        }
         task.setTitle(editTask.getTitle());
         task.setDescription(editTask.getDescription());
         task.setAssignees(editTask.getAssignees());

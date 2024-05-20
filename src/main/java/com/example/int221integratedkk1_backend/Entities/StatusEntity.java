@@ -25,16 +25,15 @@ public class StatusEntity {
 
 
     public void setName(String name) {
-
         if (name != null) {
-            this.name = name.trim();
-        }
 
-        String trimmedName = name.trim();
-        if (trimmedName.isEmpty()) {
-            this.name = null;
-        } else {
-            this.name = trimmedName;
+            String trimmedName = name.trim();
+
+            if (trimmedName.isEmpty()) {
+                this.name = null;
+            } else {
+                this.name = trimmedName;
+            }
         }
     }
 
@@ -50,6 +49,8 @@ public class StatusEntity {
             }
         }
     }
+
+
 
 
 }

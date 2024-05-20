@@ -40,4 +40,43 @@ public class TaskEntity {
     private StatusEntity status;
 
 
+    public void setTitle(String title) {
+        if (title != null) {
+
+            String trimmedTitle = title.trim();
+
+            if (trimmedTitle.isEmpty()) {
+                this.title = null;
+            } else {
+                this.title= trimmedTitle;
+            }
+        }
+    }
+
+    public void setDescription(String description) {
+        if (description != null) {
+
+            String trimmedDescription = description.trim();
+
+            if (trimmedDescription.isEmpty()) {
+                this.description = null;
+            } else {
+                this.description = trimmedDescription;
+            }
+        }
+    }
+
+    public void setAssignees(String assignees) {
+        if (assignees != null) {
+
+            String trimmedAssignees = assignees.trim();
+
+            if (trimmedAssignees.isEmpty()) {
+                this.assignees = null;
+            } else {
+                this.assignees = trimmedAssignees;
+            }
+        }
+    }
+
 }

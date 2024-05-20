@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/v2/tasks")
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = {"http://localhost:5173","http://ip23kk1.sit.kmutt.ac.th","http://intproj23.sit.kmutt.ac.th","http://intproj23.sit.kmutt.ac.th:8080","http://ip23kk1.sit.kmutt.ac.th:8080"})
 public class TaskController {
 
 
@@ -57,6 +57,7 @@ public class TaskController {
             throw new ItemNotFoundException("Task " + id + "does not exist !!!");
         }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable int id) {

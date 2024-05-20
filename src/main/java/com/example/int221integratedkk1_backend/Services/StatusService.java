@@ -49,7 +49,7 @@ public class StatusService {
     }
 
     @Transactional
-    public StatusEntity updateStatus(int id, StatusEntity updatedStatus) {
+    public String updateStatus(int id, StatusEntity updatedStatus) {
         StatusEntity existingStatus = statusRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
 
@@ -59,6 +59,9 @@ public class StatusService {
         if ("Done".equalsIgnoreCase(existingStatus.getName())) {
             throw new IllegalArgumentException("Cannot update 'Done'");
         }
+        if (updatedStatus.getName() == null || updatedStatus.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Status name cannot be null or empty");
+        }
 
         if (updatedStatus.getDescription() != null && !updatedStatus.getDescription().trim().isEmpty()) {
             existingStatus.setDescription(updatedStatus.getDescription().trim());
@@ -67,8 +70,10 @@ public class StatusService {
             existingStatus.setName(updatedStatus.getName().trim());
         }
 
-        return statusRepository.save(existingStatus);
+        statusRepository.save(existingStatus);
+        return "Status has been updated";
     }
+
 
     //    @Transactional
 //    public StatusEntity createStatus(StatusEntity statusEntity) {
