@@ -1,18 +1,17 @@
 package com.example.int221integratedkk1_backend.Controllers;
 
 import com.example.int221integratedkk1_backend.DTOS.TaskDTO;
-import com.example.int221integratedkk1_backend.DTOS.TaskRequest;
+import com.example.int221integratedkk1_backend.DTOS.TaskAddRequest;
+import com.example.int221integratedkk1_backend.DTOS.TaskUpdateRequest;
 import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
 import com.example.int221integratedkk1_backend.Services.TaskService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/v2/tasks")
@@ -38,7 +37,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskEntity> createTask(@RequestBody TaskRequest task) {
+    public ResponseEntity<TaskEntity> createTask(@RequestBody TaskAddRequest task) {
         TaskEntity createdTask = taskService.createTask(task);
         if (createdTask != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
@@ -49,7 +48,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTask(@PathVariable int id, @RequestBody TaskEntity task) {
+    public ResponseEntity<String> updateTask(@PathVariable int id, @RequestBody TaskUpdateRequest task) {
         boolean isUpdated = taskService.updateTask(id, task);
         if (isUpdated) {
             return ResponseEntity.ok("Task updated successfully");

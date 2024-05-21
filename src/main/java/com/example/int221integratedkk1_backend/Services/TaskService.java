@@ -1,7 +1,8 @@
 package com.example.int221integratedkk1_backend.Services;
 
 import com.example.int221integratedkk1_backend.DTOS.TaskDTO;
-import com.example.int221integratedkk1_backend.DTOS.TaskRequest;
+import com.example.int221integratedkk1_backend.DTOS.TaskAddRequest;
+import com.example.int221integratedkk1_backend.DTOS.TaskUpdateRequest;
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
 import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
@@ -9,9 +10,9 @@ import com.example.int221integratedkk1_backend.Exception.ValidateInputException;
 import com.example.int221integratedkk1_backend.Models.ErrorMessageExtractor;
 import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
 import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,69 +72,105 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskEntity createTask(TaskRequest task) {
+    public TaskEntity createTask(@Valid TaskAddRequest task) {
+        if (task.getTitle() == null || task.getTitle().isEmpty()) {
+            throw new ValidateInputException("Task title must not be null");
+        }
+        if (task.getTitle().length() > 100) {
+            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\n assignees size must be between 0 and 30");
+        }
+        if (task.getDescription() != null && task.getDescription().length() > 500) {
+            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\n assignees size must be between 0 and 30");
+        }
+        if (task.getAssignees() != null && task.getAssignees().length() > 30) {
+            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\n assignees size must be between 0 and 30");
+        }
+
+        if (task.getTitle() != null) {
+            task.setTitle(task.getTitle().trim());
+        }
+        if (task.getDescription() != null) {
+            task.setDescription(task.getDescription().trim());
+        }
+
+        if (task.getAssignees() != null) {
+            task.setAssignees(task.getAssignees().trim());
+        }
         TaskEntity taskEntity = modelMapper.map(task, TaskEntity.class);
         StatusEntity statusEntity = statusRepository.findById(task.getStatus())
-                .orElseThrow(() -> new ItemNotFoundException("Status does not exist"));
-        if (task.getTitle() == null|| task.getTitle().isEmpty()) {
-            throw new ValidateInputException("Title cannot be null");
-        } else
-            taskEntity.setStatus(statusEntity);
+                .orElseThrow(() -> new ItemNotFoundException("Task does not exist"));
+        taskEntity.setStatus(statusEntity);
+
         return repository.save(taskEntity);
     }
 
+
     @Transactional
-    public boolean updateTask(Integer id, TaskEntity editTask) {
+    public boolean updateTask(Integer id,@Valid TaskUpdateRequest editTask) {
+        if (editTask.getTitle() == null || editTask.getTitle().trim().isEmpty()) {
+            throw new ValidateInputException("Task title must not be null or empty");
+        }
+
+        if (editTask.getTitle().length() > 100) {
+            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\nassignees size must be between 0 and 30");
+        }
+        if (editTask.getDescription() != null && editTask.getDescription().length() > 500) {
+            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\nassignees size must be between 0 and 30");
+        }
+        if (editTask.getAssignees() != null && editTask.getAssignees().length() > 30) {
+            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\nassignees size must be between 0 and 30");
+        }
         TaskEntity task = repository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Task " + id + " does not exist !!!"));
 
-        if (editTask.getTitle() == null) {
-            throw new ValidateInputException("Title cannot be null");
+        if (editTask.getStatus() == null) {
+            throw new ValidateInputException("Status must be provided");
         }
-        task.setTitle(editTask.getTitle());
-        task.setDescription(editTask.getDescription());
-        task.setAssignees(editTask.getAssignees());
-        task.setStatus(editTask.getStatus());
+
+        Integer statusId = (Integer) editTask.getStatus();
+        StatusEntity statusEntity = statusRepository.findById(statusId)
+                .orElseThrow(() -> new ItemNotFoundException("Status " + statusId + " does not exist !!!"));
+
+        task.setTitle(editTask.getTitle().trim());
+        task.setDescription(editTask.getDescription().trim());
+        task.setDescription(editTask.getDescription().trim());
+        task.setAssignees(editTask.getAssignees().trim());
+        task.setStatus(statusEntity);
         task.setUpdatedOn(ZonedDateTime.now().toOffsetDateTime());
         repository.save(task);
         return true;
     }
 
-//@Transactional
-//public TaskEntity createTask(TaskRequest task) {
-//    try {
+
+
+
+
+//    @Transactional
+//    public TaskEntity createTask(@Valid TaskAddRequest task) {
 //        TaskEntity taskEntity = modelMapper.map(task, TaskEntity.class);
 //        StatusEntity statusEntity = statusRepository.findById(task.getStatus())
 //                .orElseThrow(() -> new ItemNotFoundException("Status does not exist"));
-//        if (task.getTitle() == null) {
-//            throw new IllegalArgumentException("Title cannot be null");
-//        } else
-//            taskEntity.setStatus(statusEntity);
+//        taskEntity.setStatus(statusEntity);
+//
 //        return repository.save(taskEntity);
-//    } catch (DataIntegrityViolationException ex) {
-//        String errorMessage = ex.getMessage();
-//        String extractedMessage = errorMessageExtractor.extractErrorMessage(errorMessage);
-//        throw new ValidateInputException(extractedMessage);
 //    }
-//}
 //
 //    @Transactional
-//    public boolean updateTask(Integer id, TaskEntity editTask) {
-//        try {
-//            TaskEntity task = repository.findById(id)
-//                    .orElseThrow(() -> new ItemNotFoundException("Task " + id + " does not exist !!!"));
-//            task.setTitle(editTask.getTitle());
-//            task.setDescription(editTask.getDescription());
-//            task.setAssignees(editTask.getAssignees());
-//            task.setStatus(editTask.getStatus());
-//            task.setUpdatedOn(ZonedDateTime.now().toOffsetDateTime());
-//            repository.save(task);
-//            return true;
-//        } catch (DataIntegrityViolationException ex) {
-//            String errorMessage = ex.getMessage();
-//            String extractedMessage = errorMessageExtractor.extractErrorMessage(errorMessage);
-//            throw new ValidateInputException(extractedMessage);
-//        }
+//    public boolean updateTask(Integer id, @Valid TaskUpdateRequest editTask) {
+//        TaskEntity task = repository.findById(id)
+//                .orElseThrow(() -> new ItemNotFoundException("Task " + id + " does not exist !!!"));
+//
+//        Integer statusId = editTask.getStatus();
+//        StatusEntity statusEntity = statusRepository.findById(statusId)
+//                .orElseThrow(() -> new ItemNotFoundException("Status " + statusId + " does not exist !!!"));
+//
+//        task.setTitle(editTask.getTitle().trim());
+//        task.setDescription(editTask.getDescription() != null ? editTask.getDescription().trim() : null);
+//        task.setAssignees(editTask.getAssignees() != null ? editTask.getAssignees().trim() : null);
+//        task.setStatus(statusEntity);
+//        task.setUpdatedOn(ZonedDateTime.now().toOffsetDateTime());
+//        repository.save(task);
+//        return true;
 //    }
 
     @Transactional

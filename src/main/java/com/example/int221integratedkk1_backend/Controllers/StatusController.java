@@ -1,8 +1,6 @@
 package com.example.int221integratedkk1_backend.Controllers;
 
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
-import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
-import com.example.int221integratedkk1_backend.Exception.StatusCannotBeDeletedException;
 import com.example.int221integratedkk1_backend.Services.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
