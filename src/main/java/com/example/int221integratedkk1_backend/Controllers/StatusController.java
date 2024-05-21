@@ -1,0 +1,57 @@
+package com.example.int221integratedkk1_backend.Controllers;
+
+import com.example.int221integratedkk1_backend.Entities.StatusEntity;
+import com.example.int221integratedkk1_backend.Services.StatusService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/v2/statuses")
+@CrossOrigin(origins = {"http://localhost:5173","http://ip23kk1.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th:8080", "http://ip23kk1.sit.kmutt.ac.th:8080"})
+public class StatusController {
+    private final StatusService statusService;
+
+    @Autowired
+    public StatusController(StatusService statusService) {
+        this.statusService = statusService;
+    }
+
+    @GetMapping
+    public List<StatusEntity> getAllStatuses() {
+        return statusService.getAllStatuses();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<StatusEntity> getStatusById(@PathVariable int id) {
+        StatusEntity status = statusService.getStatusById(id);
+        return ResponseEntity.ok(status);
+    }
+
+    @PostMapping
+    public ResponseEntity<StatusEntity> createStatus(@RequestBody StatusEntity statusEntity) {
+        StatusEntity createdStatus = statusService.createStatus(statusEntity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdStatus);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateStatus(@PathVariable int id, @RequestBody StatusEntity updatedStatus) {
+        String resultMessage = statusService.updateStatus(id, updatedStatus);
+        return ResponseEntity.ok(resultMessage);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteStatus(@PathVariable int id) {
+        statusService.deleteStatus(id);
+        return ResponseEntity.ok("The status has been deleted");
+    }
+
+    @DeleteMapping("/{id}/{newId}")
+    public ResponseEntity<String> transferAndDeleteStatus(@PathVariable int id, @PathVariable int newId) {
+        int transferredTasks = statusService.transferTasksAndDeleteStatus(id, newId);
+        return ResponseEntity.ok(transferredTasks + " task(s) have been transferred and the status has been deleted");
+    }
+}
