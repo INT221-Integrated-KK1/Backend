@@ -3,7 +3,6 @@ package com.example.int221integratedkk1_backend.Services;
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
 import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.*;
-import com.example.int221integratedkk1_backend.Models.ErrorMessageExtractor;
 import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
 import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
 import jakarta.validation.Valid;
@@ -18,7 +17,6 @@ import java.util.Optional;
 public class StatusService {
     private final StatusRepository statusRepository;
     private final TaskRepository taskRepository;
-    private ErrorMessageExtractor errorMessageExtractor;
 
     @Autowired
     public StatusService(StatusRepository statusRepository, TaskRepository taskRepository) {
@@ -76,7 +74,6 @@ public class StatusService {
         StatusEntity existingStatus = statusRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
 
-        // Check for restricted status names
         if ("No Status".equalsIgnoreCase(existingStatus.getName()) || existingStatus.getId() == 1) {
             throw new UnManageStatusException("Cannot be update 'No Status'");
         }
@@ -84,13 +81,11 @@ public class StatusService {
             throw new UnManageStatusException("Cannot be update 'done'");
         }
 
-        // Check for unique status name
         Optional<StatusEntity> duplicateStatus = statusRepository.findByName(updatedStatus.getName().trim());
         if (duplicateStatus.isPresent() && Integer.valueOf(duplicateStatus.get().getId()) != Integer.valueOf(existingStatus.getId())) {
             throw new DuplicateStatusException("Status name must be unique");
         }
 
-        // Update the status entity
         if (updatedStatus.getDescription() != null && !updatedStatus.getDescription().trim().isEmpty()) {
             existingStatus.setDescription(updatedStatus.getDescription().trim());
         }
@@ -127,7 +122,6 @@ public class StatusService {
         StatusEntity statusToDelete = statusRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
 
-        // Check for restricted status names
         if ("No Status".equalsIgnoreCase(statusToDelete.getName()) || statusToDelete.getId() == 1) {
             throw new UnManageStatusException("Cannot delete 'No Status'");
         }
@@ -135,12 +129,10 @@ public class StatusService {
             throw new UnManageStatusException("Cannot delete 'Done'");
         }
 
-        // Check that the transferToId is not the same as the id being deleted
         if (transferToId != null && transferToId.equals(id)) {
             throw new InvalidTransferIdException("destination status for task transfer must be different from current status");
         }
 
-        // Find tasks associated with the status to be deleted
         List<TaskEntity> tasks = taskRepository.findByStatusId(id);
         if (!tasks.isEmpty()) {
             if (transferToId == null) {
@@ -149,12 +141,10 @@ public class StatusService {
             StatusEntity transferToStatus = statusRepository.findById(transferToId)
                     .orElseThrow(() -> new ItemNotFoundException("The specified status for task transfer does not exist"));
 
-            // Transfer tasks to the new status
             tasks.forEach(task -> task.setStatus(transferToStatus));
             taskRepository.saveAll(tasks);
         }
 
-        // Delete the status
         statusRepository.delete(statusToDelete);
         return tasks.size();
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.OffsetDateTime;
 
 @Setter
@@ -31,7 +32,7 @@ public class TaskEntity {
     private OffsetDateTime createdOn;
 
     @Basic
-    @Column(name = "updatedOn",insertable = false)
+    @Column(name = "updatedOn", insertable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private OffsetDateTime updatedOn;
 
@@ -48,7 +49,7 @@ public class TaskEntity {
             if (trimmedTitle.isEmpty()) {
                 this.title = null;
             } else {
-                this.title= trimmedTitle;
+                this.title = trimmedTitle;
             }
         }
     }

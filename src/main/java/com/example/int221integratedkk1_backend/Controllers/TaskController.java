@@ -1,8 +1,7 @@
 package com.example.int221integratedkk1_backend.Controllers;
 
 import com.example.int221integratedkk1_backend.DTOS.TaskDTO;
-import com.example.int221integratedkk1_backend.DTOS.TaskAddRequest;
-import com.example.int221integratedkk1_backend.DTOS.TaskUpdateRequest;
+import com.example.int221integratedkk1_backend.DTOS.TaskRequest;
 import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
 import com.example.int221integratedkk1_backend.Services.TaskService;
@@ -15,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v2/tasks")
-@CrossOrigin(origins = {"http://localhost:5173","http://ip23kk1.sit.kmutt.ac.th","http://intproj23.sit.kmutt.ac.th","http://intproj23.sit.kmutt.ac.th:8080","http://ip23kk1.sit.kmutt.ac.th:8080"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://ip23kk1.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th:8080", "http://ip23kk1.sit.kmutt.ac.th:8080"})
 public class TaskController {
 
 
@@ -37,7 +36,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskEntity> createTask(@RequestBody TaskAddRequest task) {
+    public ResponseEntity<TaskEntity> createTask(@RequestBody TaskRequest task) {
         TaskEntity createdTask = taskService.createTask(task);
         if (createdTask != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
@@ -48,7 +47,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTask(@PathVariable int id, @RequestBody TaskUpdateRequest task) {
+    public ResponseEntity<String> updateTask(@PathVariable int id, @RequestBody TaskRequest task) {
         boolean isUpdated = taskService.updateTask(id, task);
         if (isUpdated) {
             return ResponseEntity.ok("Task updated successfully");
@@ -56,7 +55,6 @@ public class TaskController {
             throw new ItemNotFoundException("Task " + id + "does not exist !!!");
         }
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable int id) {

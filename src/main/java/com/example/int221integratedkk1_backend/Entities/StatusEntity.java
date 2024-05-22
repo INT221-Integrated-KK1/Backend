@@ -23,7 +23,6 @@ public class StatusEntity {
     @Column(name = "statusDescription", length = 200)
     private String description;
 
-
     public void setName(String name) {
         if (name != null) {
 
@@ -36,7 +35,6 @@ public class StatusEntity {
             }
         }
     }
-
     public void setDescription(String description) {
         if (description != null) {
 
