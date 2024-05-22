@@ -68,6 +68,7 @@ public class StatusService {
         if (updatedStatus.getName().length() > 50) {
             throw new ValidateInputException("name size must be between 0 and 50\ndescription size must be between 0 and 200");
         }
+
         if (updatedStatus.getDescription() != null && updatedStatus.getDescription().length() > 200) {
             throw new ValidateInputException("description size must be between 0 and 50\ndescription size must be between 0 and 200");
         }
@@ -93,6 +94,11 @@ public class StatusService {
         if (updatedStatus.getDescription() != null && !updatedStatus.getDescription().trim().isEmpty()) {
             existingStatus.setDescription(updatedStatus.getDescription().trim());
         }
+
+        if (updatedStatus.getDescription() == null) {
+            existingStatus.setDescription("");
+        }
+
         if (updatedStatus.getName() != null && !updatedStatus.getName().trim().isEmpty()) {
             existingStatus.setName(updatedStatus.getName().trim());
         }
