@@ -5,7 +5,6 @@ import com.example.int221integratedkk1_backend.DTOS.TaskRequest;
 import com.example.int221integratedkk1_backend.Entities.StatusEntity;
 import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
-import com.example.int221integratedkk1_backend.Exception.ValidateInputException;
 import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
 import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
 import jakarta.validation.Valid;
@@ -19,13 +18,14 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.logging.Logger;
 
-
 @Service
 public class TaskService {
 
     private static final Logger LOGGER = Logger.getLogger(TaskService.class.getName());
+
     @Autowired
     private TaskRepository repository;
+
     @Autowired
     private ListMapper listMapper;
 
@@ -48,7 +48,6 @@ public class TaskService {
                 throw new IllegalArgumentException("Invalid value for sortDirection: " + sortDirection);
             }
         } else {
-
             direction = Sort.Direction.ASC;
         }
 
@@ -70,29 +69,6 @@ public class TaskService {
 
     @Transactional
     public TaskEntity createTask(@Valid TaskRequest task) {
-        if (task.getTitle() == null || task.getTitle().isEmpty()) {
-            throw new ValidateInputException("Task title must not be null");
-        }
-        if (task.getTitle().length() > 100) {
-            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\n assignees size must be between 0 and 30");
-        }
-        if (task.getDescription() != null && task.getDescription().length() > 500) {
-            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\n assignees size must be between 0 and 30");
-        }
-        if (task.getAssignees() != null && task.getAssignees().length() > 30) {
-            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\n assignees size must be between 0 and 30");
-        }
-
-        if (task.getTitle() != null) {
-            task.setTitle(task.getTitle().trim());
-        }
-        if (task.getDescription() != null) {
-            task.setDescription(task.getDescription().trim());
-        }
-
-        if (task.getAssignees() != null) {
-            task.setAssignees(task.getAssignees().trim());
-        }
         TaskEntity taskEntity = modelMapper.map(task, TaskEntity.class);
         StatusEntity statusEntity = statusRepository.findById(task.getStatus()).orElseThrow(() -> new ItemNotFoundException("Task does not exist"));
         taskEntity.setStatus(statusEntity);
@@ -100,35 +76,16 @@ public class TaskService {
         return repository.save(taskEntity);
     }
 
-
     @Transactional
     public boolean updateTask(Integer id, @Valid TaskRequest editTask) {
-        if (editTask.getTitle() == null || editTask.getTitle().trim().isEmpty()) {
-            throw new ValidateInputException("Task title must not be null or empty");
-        }
-
-        if (editTask.getTitle().length() > 100) {
-            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\nassignees size must be between 0 and 30");
-        }
-        if (editTask.getDescription() != null && editTask.getDescription().length() > 500) {
-            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\nassignees size must be between 0 and 30");
-        }
-        if (editTask.getAssignees() != null && editTask.getAssignees().length() > 30) {
-            throw new ValidateInputException("title size must be between 0 and 100\ndescription size must be between 0 and 500\nassignees size must be between 0 and 30");
-        }
         TaskEntity task = repository.findById(id).orElseThrow(() -> new ItemNotFoundException("Task " + id + " does not exist !!!"));
-
-        if (editTask.getStatus() == null) {
-            throw new ValidateInputException("Status must be provided");
-        }
 
         Integer statusId = (Integer) editTask.getStatus();
         StatusEntity statusEntity = statusRepository.findById(statusId).orElseThrow(() -> new ItemNotFoundException("Status " + statusId + " does not exist !!!"));
 
         task.setTitle(editTask.getTitle().trim());
-        task.setDescription(editTask.getDescription().trim());
-        task.setDescription(editTask.getDescription().trim());
-        task.setAssignees(editTask.getAssignees().trim());
+        task.setDescription(editTask.getDescription() != null ? editTask.getDescription().trim() : null);
+        task.setAssignees(editTask.getAssignees() != null ? editTask.getAssignees().trim() : null);
         task.setStatus(statusEntity);
         task.setUpdatedOn(ZonedDateTime.now().toOffsetDateTime());
         repository.save(task);
@@ -141,6 +98,4 @@ public class TaskService {
         repository.delete(task);
         return true;
     }
-
 }
-

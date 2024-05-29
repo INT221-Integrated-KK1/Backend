@@ -5,18 +5,21 @@ import com.example.int221integratedkk1_backend.DTOS.TaskRequest;
 import com.example.int221integratedkk1_backend.Entities.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
 import com.example.int221integratedkk1_backend.Services.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v2/tasks")
 @CrossOrigin(origins = {"http://localhost:5173", "http://ip23kk1.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th:8080", "http://ip23kk1.sit.kmutt.ac.th:8080"})
 public class TaskController {
-
 
     @Autowired
     private TaskService taskService;
@@ -25,7 +28,6 @@ public class TaskController {
     public ResponseEntity<List<TaskDTO>> getAllTasks(@RequestParam(required = false) List<String> filterStatuses,
                                                      @RequestParam(defaultValue = "status.name") String sortBy,
                                                      @RequestParam(defaultValue = "asc") String sortDirection) {
-
         List<TaskDTO> taskDTOs = taskService.getAllTasks(filterStatuses, sortBy, sortDirection);
         return ResponseEntity.ok(taskDTOs);
     }
@@ -36,23 +38,18 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskEntity> createTask(@RequestBody TaskRequest task) {
+    public ResponseEntity<TaskEntity> createTask(@Valid @RequestBody TaskRequest task) {
         TaskEntity createdTask = taskService.createTask(task);
-        if (createdTask != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
-        } else {
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTask(@PathVariable int id, @RequestBody TaskRequest task) {
+    public ResponseEntity<String> updateTask(@PathVariable int id, @Valid @RequestBody TaskRequest task) {
         boolean isUpdated = taskService.updateTask(id, task);
         if (isUpdated) {
             return ResponseEntity.ok("Task updated successfully");
         } else {
-            throw new ItemNotFoundException("Task " + id + "does not exist !!!");
+            throw new ItemNotFoundException("Task " + id + " does not exist !!!");
         }
     }
 
@@ -62,8 +59,14 @@ public class TaskController {
         if (isDeleted) {
             return ResponseEntity.ok("Task deleted successfully");
         } else {
-            throw new ItemNotFoundException("Task " + id + "does not exist !!!");
+            throw new ItemNotFoundException("Task " + id + " does not exist !!!");
         }
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
 }
