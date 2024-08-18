@@ -1,14 +1,14 @@
-package com.example.int221integratedkk1_backend.Services;
+package com.example.int221integratedkk1_backend.Services.Taskboard;
 
-import com.example.int221integratedkk1_backend.Entities.StatusEntity;
-import com.example.int221integratedkk1_backend.Entities.TaskEntity;
+import com.example.int221integratedkk1_backend.Entities.Taskboard.StatusEntity;
+import com.example.int221integratedkk1_backend.Entities.Taskboard.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.*;
-import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
-import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
-import jakarta.validation.Valid;
+import com.example.int221integratedkk1_backend.Repositories.Taskboard.StatusRepository;
+import com.example.int221integratedkk1_backend.Repositories.Taskboard.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class StatusService {
         return statusRepository.findAll();
     }
 
-    public StatusEntity getStatusById(int id) {
+    public StatusEntity getStatusById(int id) throws ItemNotFoundException {
         return statusRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
     }
@@ -42,15 +42,14 @@ public class StatusService {
     }
 
     @Transactional
-    public String updateStatus(int id, @Valid StatusEntity updatedStatus) {
+    public String updateStatus(int id, @Valid StatusEntity updatedStatus) throws ItemNotFoundException, DuplicateStatusException, UnManageStatusException {
         StatusEntity existingStatus = statusRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
 
-        if ("No Status".equalsIgnoreCase(existingStatus.getName()) || existingStatus.getId() == 1) {
-            throw new UnManageStatusException("Cannot be update 'No Status'");
-        }
-        if ("Done".equalsIgnoreCase(existingStatus.getName()) || existingStatus.getId() == 7) {
-            throw new UnManageStatusException("Cannot be update 'Done'");
+        // Check constraints for "No Status" and "Done"
+        if ("No Status".equalsIgnoreCase(existingStatus.getName()) || existingStatus.getId() == 1 ||
+                "Done".equalsIgnoreCase(existingStatus.getName()) || existingStatus.getId() == 7) {
+            throw new UnManageStatusException("Cannot update or delete protected statuses");
         }
 
         Optional<StatusEntity> duplicateStatus = statusRepository.findByName(updatedStatus.getName().trim());
@@ -66,41 +65,34 @@ public class StatusService {
     }
 
     @Transactional
-    public void deleteStatus(int id) {
+    public void deleteStatus(int id) throws ItemNotFoundException, UnManageStatusException {
         StatusEntity status = statusRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
 
-        if ("No Status".equalsIgnoreCase(status.getName())) {
-            throw new UnManageStatusException("Cannot be delete 'No Status'");
-        }
-        if ("Done".equalsIgnoreCase(status.getName())) {
-            throw new UnManageStatusException("Cannot be  delete 'Done'");
+        if ("No Status".equalsIgnoreCase(status.getName()) || status.getId() == 1 ||
+                "Done".equalsIgnoreCase(status.getName()) || status.getId() == 7) {
+            throw new UnManageStatusException("Cannot delete protected statuses");
         }
 
         statusRepository.delete(status);
     }
 
     @Transactional
-    public int transferTasksAndDeleteStatus(int id, Integer transferToId) {
+    public int transferTasksAndDeleteStatus(int id, Integer transferToId) throws ItemNotFoundException, UnManageStatusException, InvalidTransferIdException {
         StatusEntity statusToDelete = statusRepository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status " + id + " not found"));
 
-        if ("No Status".equalsIgnoreCase(statusToDelete.getName()) || statusToDelete.getId() == 1) {
-            throw new UnManageStatusException("Cannot delete 'No Status'");
-        }
-        if ("Done".equalsIgnoreCase(statusToDelete.getName()) || statusToDelete.getId() == 7) {
-            throw new UnManageStatusException("Cannot delete 'Done'");
+        if ("No Status".equalsIgnoreCase(statusToDelete.getName()) || statusToDelete.getId() == 1 ||
+                "Done".equalsIgnoreCase(statusToDelete.getName()) || statusToDelete.getId() == 7) {
+            throw new UnManageStatusException("Cannot delete protected statuses");
         }
 
         if (transferToId != null && transferToId.equals(id)) {
-            throw new InvalidTransferIdException("destination status for task transfer must be different from the current status");
+            throw new InvalidTransferIdException("Destination status for task transfer must be different from the current status");
         }
 
         List<TaskEntity> tasks = taskRepository.findByStatusId(id);
-        if (!tasks.isEmpty()) {
-            if (transferToId == null) {
-                throw new InvalidTransferIdException("destination status for task transfer must be different from current status");
-            }
+        if (!tasks.isEmpty() && transferToId != null) {
             StatusEntity transferToStatus = statusRepository.findById(transferToId)
                     .orElseThrow(() -> new ItemNotFoundException("The specified status for task transfer does not exist"));
 

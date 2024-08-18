@@ -1,12 +1,13 @@
-package com.example.int221integratedkk1_backend.Services;
+package com.example.int221integratedkk1_backend.Services.Taskboard;
 
 import com.example.int221integratedkk1_backend.DTOS.TaskDTO;
 import com.example.int221integratedkk1_backend.DTOS.TaskRequest;
-import com.example.int221integratedkk1_backend.Entities.StatusEntity;
-import com.example.int221integratedkk1_backend.Entities.TaskEntity;
+import com.example.int221integratedkk1_backend.Entities.Taskboard.StatusEntity;
+import com.example.int221integratedkk1_backend.Entities.Taskboard.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
-import com.example.int221integratedkk1_backend.Repositories.StatusRepository;
-import com.example.int221integratedkk1_backend.Repositories.TaskRepository;
+import com.example.int221integratedkk1_backend.Repositories.Taskboard.StatusRepository;
+import com.example.int221integratedkk1_backend.Repositories.Taskboard.TaskRepository;
+import com.example.int221integratedkk1_backend.Services.ListMapper;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,20 +69,20 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskEntity createTask(@Valid TaskRequest task) {
+    public TaskEntity createTask(@Valid TaskRequest task) throws Throwable {
         TaskEntity taskEntity = modelMapper.map(task, TaskEntity.class);
-        StatusEntity statusEntity = statusRepository.findById(task.getStatus()).orElseThrow(() -> new ItemNotFoundException("Task does not exist"));
+        StatusEntity statusEntity = (StatusEntity) statusRepository.findById(task.getStatus()).orElseThrow(() -> new ItemNotFoundException("Task does not exist"));
         taskEntity.setStatus(statusEntity);
 
         return repository.save(taskEntity);
     }
 
     @Transactional
-    public boolean updateTask(Integer id, @Valid TaskRequest editTask) {
+    public boolean updateTask(Integer id, @Valid TaskRequest editTask) throws Throwable {
         TaskEntity task = repository.findById(id).orElseThrow(() -> new ItemNotFoundException("Task " + id + " does not exist !!!"));
 
         Integer statusId = (Integer) editTask.getStatus();
-        StatusEntity statusEntity = statusRepository.findById(statusId).orElseThrow(() -> new ItemNotFoundException("Status " + statusId + " does not exist !!!"));
+        StatusEntity statusEntity = (StatusEntity) statusRepository.findById(statusId).orElseThrow(() -> new ItemNotFoundException("Status " + statusId + " does not exist !!!"));
 
         task.setTitle(editTask.getTitle().trim());
         task.setDescription(editTask.getDescription() != null ? editTask.getDescription().trim() : null);

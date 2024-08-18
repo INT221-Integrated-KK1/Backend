@@ -1,8 +1,8 @@
-package com.example.int221integratedkk1_backend.Controllers;
+package com.example.int221integratedkk1_backend.Controllers.Taskboard;
 
-import com.example.int221integratedkk1_backend.Entities.StatusEntity;
+import com.example.int221integratedkk1_backend.Entities.Taskboard.StatusEntity;
 import com.example.int221integratedkk1_backend.Exception.*;
-import com.example.int221integratedkk1_backend.Services.StatusService;
+import com.example.int221integratedkk1_backend.Services.Taskboard.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +35,8 @@ public class StatusController {
             return ResponseEntity.ok(status);
         } catch (ItemNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -55,6 +57,8 @@ public class StatusController {
             return ResponseEntity.ok(resultMessage);
         } catch (ItemNotFoundException | ValidateInputException | DuplicateStatusException | UnManageStatusException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -63,7 +67,7 @@ public class StatusController {
         try {
             statusService.deleteStatus(id);
             return ResponseEntity.ok("The status has been deleted");
-        } catch (ItemNotFoundException | UnManageStatusException e) {
+        } catch (Throwable e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -75,6 +79,8 @@ public class StatusController {
             return ResponseEntity.ok(transferredTasks + " task(s) have been transferred and the status has been deleted");
         } catch (ItemNotFoundException | UnManageStatusException | InvalidTransferIdException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 }

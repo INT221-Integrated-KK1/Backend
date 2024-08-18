@@ -10,8 +10,7 @@ import lombok.Setter;
 @Setter
 public class TaskRequest {
 
-    @NotNull(message = "Task title must not be null")
-    @NotEmpty(message = "Task title must not be blank")
+    @NotEmpty(message = "Task title must not be null")
     @Size(max = 100, message = "title size must be between 0 and 100")
     private String title;
 
