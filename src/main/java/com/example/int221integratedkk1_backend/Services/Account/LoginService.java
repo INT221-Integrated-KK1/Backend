@@ -21,7 +21,7 @@ public class LoginService {
     public boolean authenticate(String username, String password) {
         Optional<UsersEntity> user = userRepository.findByUsername(username);
 
-        if (user == null) {
+        if (user.isEmpty()) {
             return false;
         } else {
             Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, 16, 32);
