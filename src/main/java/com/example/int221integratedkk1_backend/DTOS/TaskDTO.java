@@ -1,6 +1,6 @@
 package com.example.int221integratedkk1_backend.DTOS;
 
-import com.example.int221integratedkk1_backend.Entities.StatusEntity;
+import com.example.int221integratedkk1_backend.Entities.Taskboard.StatusEntity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;

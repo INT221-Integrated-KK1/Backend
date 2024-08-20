@@ -1,4 +1,4 @@
-package com.example.int221integratedkk1_backend.Entities;
+package com.example.int221integratedkk1_backend.Entities.Taskboard;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;

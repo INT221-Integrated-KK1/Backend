@@ -1,10 +1,10 @@
-package com.example.int221integratedkk1_backend.Controllers;
+package com.example.int221integratedkk1_backend.Controllers.Taskboard;
 
 import com.example.int221integratedkk1_backend.DTOS.TaskDTO;
 import com.example.int221integratedkk1_backend.DTOS.TaskRequest;
-import com.example.int221integratedkk1_backend.Entities.TaskEntity;
+import com.example.int221integratedkk1_backend.Entities.Taskboard.TaskEntity;
 import com.example.int221integratedkk1_backend.Exception.ItemNotFoundException;
-import com.example.int221integratedkk1_backend.Services.TaskService;
+import com.example.int221integratedkk1_backend.Services.Taskboard.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,13 +38,13 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskEntity> createTask(@Valid @RequestBody TaskRequest task) {
+    public ResponseEntity<TaskEntity> createTask(@Valid @RequestBody TaskRequest task) throws Throwable {
         TaskEntity createdTask = taskService.createTask(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTask(@PathVariable int id, @Valid @RequestBody TaskRequest task) {
+    public ResponseEntity<String> updateTask(@PathVariable int id, @Valid @RequestBody TaskRequest task) throws Throwable {
         boolean isUpdated = taskService.updateTask(id, task);
         if (isUpdated) {
             return ResponseEntity.ok("Task updated successfully");
