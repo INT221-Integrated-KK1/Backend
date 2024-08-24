@@ -60,6 +60,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, HttpStatus.METHOD_NOT_ALLOWED, request);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException exception, WebRequest request) {
+        return buildErrorResponse(exception, HttpStatus.UNAUTHORIZED, request);
+    }
+
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception exception, HttpStatus httpStatus, WebRequest request) {
         return buildErrorResponse(exception, exception.getMessage(), httpStatus, request);
     }
