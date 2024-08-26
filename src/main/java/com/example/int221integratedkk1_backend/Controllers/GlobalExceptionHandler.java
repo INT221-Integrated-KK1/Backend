@@ -4,9 +4,7 @@ import com.example.int221integratedkk1_backend.Exception.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -58,6 +56,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public ResponseEntity<ErrorResponse> handleMethodNotAllowedException(HttpRequestMethodNotSupportedException exception, WebRequest request) {
         return buildErrorResponse(exception, HttpStatus.METHOD_NOT_ALLOWED, request);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Object> handleUnauthorizedException(UnauthorizedException ex, WebRequest request) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception exception, HttpStatus httpStatus, WebRequest request) {

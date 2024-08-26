@@ -8,9 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/login")
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:5173", "https://ip23kk1.sit.kmutt.ac.th", "https://intproj23.sit.kmutt.ac.th", "https://intproj23.sit.kmutt.ac.th:8080", "https://ip23kk1.sit.kmutt.ac.th:8080"})
 public class LoginController {
 
     private final LoginService loginService;
@@ -21,12 +24,19 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<String> login(@Validated @RequestBody LoginReqDTO loginRequest) {
-        boolean isAuthenticated = loginService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
+    public ResponseEntity<Map<String, String>> login(@Validated @RequestBody LoginReqDTO loginRequest) {
+        boolean isAuthenticated = loginService.authenticate(loginRequest.getUserName(), loginRequest.getPassword());
+
+        Map<String, String> response = new HashMap<>();
+
         if (isAuthenticated) {
-            return ResponseEntity.ok("Login successful");
+            response.put("status", "success");
+            response.put("detail", "Login Successful");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username or Password is incorrect");
+            response.put("status", "error");
+            response.put("message", "Username or Password is incorrect");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
 }

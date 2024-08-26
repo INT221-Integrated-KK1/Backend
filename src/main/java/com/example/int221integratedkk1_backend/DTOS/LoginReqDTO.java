@@ -10,7 +10,7 @@ import lombok.Setter;
 public class LoginReqDTO {
     @NotEmpty(message = "Username must not be empty")
     @Size(max = 50, message = "Username must not exceed 50 characters")
-    private String username;
+    private String userName;
 
     @NotEmpty(message = "Password must not be empty")
     @Size(max = 14, message = "Password must not exceed 14 characters")
