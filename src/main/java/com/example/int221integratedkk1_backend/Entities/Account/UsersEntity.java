@@ -3,6 +3,7 @@ package com.example.int221integratedkk1_backend.Entities.Account;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -13,12 +14,14 @@ public class UsersEntity {
     @Id
     @Column(name = "oid")
     private String oid;
-    @Basic
-    @Column(name = "username")
+    @NotBlank
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
-    @Basic
-    @Column(name = "password")
+
+    @NotBlank
+    @Column(name = "password", nullable = false)
     private String password;
+
     @Basic
     @Column(name = "name")
     private String name;

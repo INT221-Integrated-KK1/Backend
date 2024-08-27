@@ -52,7 +52,7 @@ public class JwtTokenUtil implements Serializable {
                 .setHeaderParam("typ", "JWT")
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuer("http://localhost:8080/")
+                .setIssuer("https://intproj23.sit.kmutt.ac.th/kk1/")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY)) // Set exp (expiration)
                 .signWith(signatureAlgorithm, SECRET_KEY)
